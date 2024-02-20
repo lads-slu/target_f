@@ -1,0 +1,10 @@
+par(mfrow=c(1,2))
+r <- rast(xmin=0, xmax=10, ymin=0, ymax=10, nrows=10, ncols=10)
+values(r) <- runif(ncell(r))
+e<-as.polygons(ext(r))
+ee <- buffer(e, -2.3)
+plot(r); plot(ee, add=T)
+rc <- crop(r, ee)
+plot(e); plot(rc, add=T); plot(e, add=T)
+sen2r()
+y
