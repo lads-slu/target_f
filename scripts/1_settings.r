@@ -22,7 +22,7 @@ par(mfrow=c(3,3))
 ##paths
 combinefile<-"in\\ymaps21\\oats21\\2_epsg3006\\oats_2021_test_1.shp" #path, point shape file (combine registrations)
 fieldfile<-"in\\ymaps21\\oats21\\2_epsg3006\\block_test_1.shp" #path, polygon shapefile (field boundary)
-outdir<-"out_test_1"
+outdir<-"out"
 ##column names
 yieldname<-"YIELD" #name of yield column
 moisturename<-"MOISTURE" #name of moisture column (character value or NA)
@@ -42,6 +42,7 @@ moisturefilter<-c(0.025, 0.975) #quantiles of moisture hampel filter(outliers wi
 yieldfilter<-c(0.025, 0.975) #quantiles of yield hampel filter (outliers will be removed)
 widthfilter<-0.95 ##lower quantile of swath width to keep (lower values will be removed)
 edgefilter<-30 #width of buffer zone inside field boundary edge in which registrations will be removed
+focalfilter<-1 #degree of smothing (positive integer). 0= no smoothing, 3=strong smoothing
 
 #import and prepare data
 source("scripts\\3_import_data.r")
