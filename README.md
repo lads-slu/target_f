@@ -1,4 +1,4 @@
-# combinecleaner
+# target_combine
 Filtering yield registrations from combine harvesters
 
 (in Swedish)
