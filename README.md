@@ -1,4 +1,4 @@
-# target_combine
+# target_f
 Filtering yield registrations from combine harvesters
 
 (in Swedish)
