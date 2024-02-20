@@ -17,7 +17,12 @@ writeVector(x=bsmall, filename=fname, overwrite=TRUE)
 fname<-file.path(outdir,'aoi.shp')
 writeVector(x=aoi, filename=fname, overwrite=TRUE)
 
-#TIFF
+#export tiff of unfiltered values
 
 
-#STATISTICS
+#export filtered tiff
+
+
+#export statistics
+fname<-file.path(outdir,'stats.txt')
+write.table(stats, fname, "\t", row.names = FALSE)

@@ -33,6 +33,7 @@ widthname<-'WIDTH'  #name of swathwidth column (character value or NA)
 ##projections
 prj<-"epsg: 3006" # coordinate system onto which data shall be projected (if it not already is)
 res<- 20 #resolution of created yield raster
+
 ##filter settings
 turnfilter<-c(0.05, 0.95) #lower and upper quantiles of turn index to keep (the extremes will be removed)
 gapfilter<-c(0.05, 0.95) #lower and upper quantiles of gap index to keep (the extremes will be removed)

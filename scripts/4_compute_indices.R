@@ -34,3 +34,6 @@ a<-as.data.frame(crds(s))
 a<-FNN::knn.dist(data=a, k=100, algorithm='brute')
 a<-a<p
 s$density<-rowSums(a)
+
+#is point within buffer along field edge
+s$buffer<-s$id%in%s[bsmall,]$id

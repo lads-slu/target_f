@@ -3,7 +3,7 @@ n<-'turn'; a<-as.data.frame(s)[,n]
 if(sum(is.na(a))<0.5*length(a)&var(a, na.rm=T)>0.005){
   qq<-quantile(a, probs=turnfilter, names=F, na.rm=T)
   selk<-a<=qq[2];selk[is.na(selk)]<-FALSE
-  plot(b[s,], xlab=n); plot(s[!selk,],add=T)
+  plot(b, xlab=n); plot(s[!selk,],add=T)
 }else{
   selk<-rep(TRUE,length(a));selk[is.na(selk)]<-FALSE
   plot(x=1, y=1, main =paste0('no ', n, ' slot'))
@@ -14,7 +14,7 @@ n<-'gap'; a<-as.data.frame(s)[,n]
 if(sum(is.na(a))<0.5*length(a)&var(a, na.rm=T)>0.005){
   qq<-quantile(a, probs=gapfilter, names=F, na.rm=T)
   selk<-a<=qq[2];selk[is.na(selk)]<-FALSE
-  plot(b[s,], xlab=n); plot(s[!selk,],add=T)
+  plot(b, xlab=n); plot(s[!selk,],add=T)
 }else{
   selk<-rep(TRUE,length(a));selk[is.na(selk)]<-FALSE
   plot(x=1, y=1, main =paste0('no ', n, ' slot'))
@@ -25,7 +25,7 @@ n<-'density'; a<-as.data.frame(s)[,n]
 if(sum(is.na(a))<0.5*length(a)&var(a, na.rm=T)>0.005){
   qq<-quantile(a, probs=densityfilter, names=F, na.rm=T)
   selk<-a>=qq[1]&a<=qq[2];selk[is.na(selk)]<-FALSE
-  plot(b[s,], xlab=n); plot(s[!selk,],add=T)
+  plot(b, xlab=n); plot(s[!selk,],add=T)
 }else{
   selk<-rep(TRUE,length(a));selk[is.na(selk)]<-FALSE
   plot(x=1, y=1, main =paste0('no ', n, ' slot'))
@@ -36,15 +36,12 @@ n<-'width'; a<-as.data.frame(s)[,n]
 if(sum(is.na(a))<0.5*length(a)&var(a, na.rm=T)>0.005){
   high<-widthfilter*max(a, na.rm=T)
   selk<-a>=high;selk[is.na(selk)]<-FALSE
-  plot(b[s,], xlab=n); plot(s[!selk,],add=T)
+  plot(b, xlab=n); plot(s[!selk,],add=T)
 }else{
   selk<-rep(TRUE,length(a));selk[is.na(selk)]<-FALSE
   plot(x=1, y=1, main =paste0('no ', n, ' slot'))
 }
 s[,paste0('o_',n)]<-!selk; sel4<-selk
-
-sel<-sel1&sel2&sel3&sel4
-s[,'omit']<-0; s[!sel,'omit']<-1
 
 # 2 mark points to remove based on values
 
@@ -54,7 +51,7 @@ if(sum(is.na(a))<0.5*length(a)&var(a, na.rm=T)>0.005){
   low<-cc-bb; high<-cc+bb #hampel filter 
   qq<-quantile(a, probs=moisturefilter, names=F, na.rm=T)
   selk<-a>=low&a<=high&a>=qq[1]&a<=qq[2];selk[is.na(selk)]<-FALSE
-  plot(b[s,], xlab=n); plot(s[!selk,],add=T)
+  plot(b, xlab=n); plot(s[!selk,],add=T)
 }else{
   selk<-rep(TRUE,length(a));selk[is.na(selk)]<-FALSE
   plot(x=1, y=1, main =paste0('no ', n, ' slot'))
@@ -67,26 +64,35 @@ if(sum(is.na(a))<0.5*length(a)&var(a, na.rm=T)>0.005){
   low<-cc-bb; high<-cc+bb #hampel filter 
   qq<-quantile(a, probs=yieldfilter, names=F, na.rm=T)
   selk<-a>=low&a<=high&a>=qq[1]&a<=qq[2];selk[is.na(selk)]<-FALSE
-  plot(b[s,], xlab=n); plot(s[!selk,],add=T)
+  plot(b, xlab=n); plot(s[!selk,],add=T)
 }else{
   selk<-rep(TRUE,length(a));selk[is.na(selk)]<-FALSE
   plot(x=1, y=1, main =paste0('no ', n, ' slot'))
 }
 s[,paste0('o_',n)]<-!selk; sel6<-selk
 
-sel<-sel&sel5&sel6
-s[!sel,'omit']<-1
+#3 mark points to remove within buffer (a bit cumbersome but just to b analogous to above)
+n<-'buffer'
+selk<-s$buffer
+plot(b, xlab=n); plot(s[!selk,],add=T)
+s[,paste0('o_',n)]<-!selk
 
-#3 mark points to remove within buffer
-s[,'buffer']<-0; sel<-!s$id%in%s[bsmall,]$id; s[sel,'buffer']<-1
+#4_compile all points to omit
+omitcols<-c("o_turn", "o_gap", "o_density", "o_width", "o_moisture", "o_yield", "o_buffer")
+s$o_any<-apply(X=values(s)[,omitcols], MARGIN=1, FUN=any)
 
 #plot
-plot(b[s,])
-plot(s[s$omit==0,], "yield", col=rainbow(25), cex=0.2 ,  add=T)
+plot(b)
+plot(s[s$o_any==0,], "yield", col=rainbow(25), cex=0.2 ,  add=T)
 plot(bsmall[s,], add=T)
 
-#plot
-plot(b[s,])
-plot(s[s$omit==0&s$buffer==0,], "yield", col=rainbow(25), cex=0.2 ,  add=T)
-plot(bsmall[s,], add=T)
-hist(s$omit, main=paste0(round(100*mean(s$omit)), ' % omitted'))
+
+#compute summary statistics
+omitcols2<-c(omitcols, "o_any")
+stats<-round(colMeans(values(s)[,omitcols2]),2)
+names(stats)<-gsub(names(stats), pattern="o_", replacement="")
+stats<-data.frame(index=names(stats), omitted=stats)
+row.names(stats)<-NULL
+
+
+plot(x=as.factor(stats$index), y=stats$omitted)
