@@ -1,7 +1,4 @@
-s <- vect(file.path(shpdir,i))
-s$id<-1:nrow(s)
-a<-as.data.frame(s)
-#sel<-complete.cases(a); s<-s[sel,]
+
 
 #rename columns
 nold<-as.character(c(yieldname, moisturename, widthname))
